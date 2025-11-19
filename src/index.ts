@@ -38,7 +38,9 @@ app.post('/api/v1/records', (req: Request, res: Response) => {
   return res.json(recordsBatch);
 });
 app.post('/api/v1/selected-records', (req: Request, res: Response) => {
-  return res.json(selectedRecords);
+  console.log('🚀 ~/api/v1/selected-records start');
+  const { index } = req.body;
+  return res.json(selectedRecords.slice(index, index + 20));
 });
 
 app.post('/api/v1/add-selected-record', (req: Request, res: Response) => {
