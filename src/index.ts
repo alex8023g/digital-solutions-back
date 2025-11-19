@@ -5,7 +5,7 @@ import { createRecords } from './createRecords';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const records = createRecords();
+let records = createRecords();
 
 // Middleware
 app.use(cors());
@@ -17,7 +17,7 @@ type Record = {
   name: string;
 };
 
-const selectedRecords: Record[] = [];
+let selectedRecords: Record[] = [];
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
@@ -29,6 +29,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 app.post('/api/v1/records', (req: Request, res: Response) => {
+  console.log('🚀 ~/api/v1/records start');
   const { index } = req.body;
   console.log(req.body);
   let recordsBatch: Record[] = [];
@@ -36,8 +37,29 @@ app.post('/api/v1/records', (req: Request, res: Response) => {
   console.log('🚀 ~ recordsBatch:', recordsBatch);
   return res.json(recordsBatch);
 });
+app.post('/api/v1/selected-records', (req: Request, res: Response) => {
+  return res.json(selectedRecords);
+});
 
-// Start server
+app.post('/api/v1/add-selected-record', (req: Request, res: Response) => {
+  const { id } = req.body;
+  const record = records.find((record) => record.id === id);
+  if (record) {
+    selectedRecords.push(record);
+    records = records.filter((record) => record.id !== id);
+  }
+  console.log('🚀 ~ selectedRecords:', selectedRecords);
+  return res.json({ selectedRecords });
+});
+
+app.post('/api/v1/set-selected-records', (req: Request, res: Response) => {
+  console.log('🚀 ~/api/v1/set-selected-records start');
+  const body = req.body;
+  selectedRecords = body.records;
+  console.log('🚀 ~ selectedRecords:', selectedRecords);
+  return res.json({ status: 'ok' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
