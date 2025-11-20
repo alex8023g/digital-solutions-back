@@ -53,6 +53,11 @@ app.post('/api/v1/add-selected-record', (req: Request, res: Response) => {
   console.log('🚀 ~ selectedRecords:', selectedRecords);
   return res.json(selectedRecords);
 });
+app.post('/api/v1/remove-selected-record', (req: Request, res: Response) => {
+  const { id } = req.body;
+  selectedRecords = selectedRecords.filter((record) => record.id !== id);
+  return res.json({ status: 'ok' });
+});
 
 app.post('/api/v1/set-selected-records', (req: Request, res: Response) => {
   console.log('🚀 ~/api/v1/set-selected-records start');
