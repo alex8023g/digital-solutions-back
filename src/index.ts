@@ -59,10 +59,13 @@ app.post('/api/v1/remove-selected-record', (req: Request, res: Response) => {
   return res.json({ status: 'ok' });
 });
 
-app.post('/api/v1/set-selected-records', (req: Request, res: Response) => {
+app.post('/api/v1/save-selected-order', (req: Request, res: Response) => {
   console.log('🚀 ~/api/v1/set-selected-records start');
-  const body = req.body;
-  selectedRecords = body.records;
+  const selectedRecordsInView = req.body.records;
+  selectedRecords = [
+    ...selectedRecordsInView,
+    ...selectedRecords.slice(selectedRecordsInView.length, selectedRecords.length),
+  ];
   console.log('🚀 ~ selectedRecords:', selectedRecords);
   return res.json({ status: 'ok' });
 });
