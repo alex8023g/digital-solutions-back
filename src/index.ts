@@ -51,7 +51,7 @@ app.post('/api/v1/add-selected-record', (req: Request, res: Response) => {
     records = records.filter((record) => record.id !== id);
   }
   console.log('🚀 ~ selectedRecords:', selectedRecords);
-  return res.json({ selectedRecords });
+  return res.json(selectedRecords);
 });
 
 app.post('/api/v1/set-selected-records', (req: Request, res: Response) => {
