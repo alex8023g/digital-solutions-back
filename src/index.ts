@@ -18,6 +18,7 @@ type Record = {
 };
 
 let selectedRecords: Record[] = [];
+let filteredSelectedRecords: Record[] = [];
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
@@ -45,10 +46,18 @@ app.post('/api/v1/records', (req: Request, res: Response) => {
     return res.json(recordsBatch);
   }
 });
+
 app.post('/api/v1/selected-records', (req: Request, res: Response) => {
   console.log('🚀 ~/api/v1/selected-records start');
-  const { index } = req.body;
-  return res.json(selectedRecords.slice(index, index + 20));
+  const { index, filter } = req.body;
+  if (filter.length === 0) {
+    return res.json(selectedRecords.slice(index, index + 20));
+  } else {
+    filteredSelectedRecords = selectedRecords.filter((record) =>
+      filter.includes(record.id)
+    );
+    return res.json(filteredSelectedRecords.slice(index, index + 20));
+  }
 });
 
 app.post('/api/v1/add-selected-record', (req: Request, res: Response) => {
@@ -68,14 +77,31 @@ app.post('/api/v1/remove-selected-record', (req: Request, res: Response) => {
 });
 
 app.post('/api/v1/save-selected-order', (req: Request, res: Response) => {
-  console.log('🚀 ~/api/v1/set-selected-records start');
+  console.log('🚀 ~/api/v1/save-selected-records start');
   const selectedRecordsInView = req.body.records;
-  selectedRecords = [
-    ...selectedRecordsInView,
-    ...selectedRecords.slice(selectedRecordsInView.length, selectedRecords.length),
-  ];
-  console.log('🚀 ~ selectedRecords:', selectedRecords);
-  return res.json({ status: 'ok' });
+  console.log('🚀 ~ selectedRecordsInView:', selectedRecordsInView);
+  const filter = req.body.filter;
+  if (filter.length === 0) {
+    selectedRecords = [
+      ...selectedRecordsInView,
+      ...selectedRecords.slice(selectedRecordsInView.length, selectedRecords.length),
+    ];
+    console.log('🚀 ~ selectedRecords:', selectedRecords);
+  } else {
+    const selectedRecordsClone = [...selectedRecords];
+    filteredSelectedRecords.forEach((record, i) => {
+      const index = selectedRecords.findIndex((r) => r?.id === record?.id);
+      if (index !== -1) {
+        selectedRecordsClone[index] = selectedRecordsInView[i];
+      }
+    });
+    selectedRecords = selectedRecordsClone;
+    filteredSelectedRecords = selectedRecordsClone.filter((record) =>
+      filter.includes(record.id)
+    );
+    console.log('🚀 ~ selectedRecordsClone:', selectedRecordsClone);
+    return res.json({ status: 'ok' });
+  }
 });
 
 app.listen(PORT, () => {
