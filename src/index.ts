@@ -30,12 +30,20 @@ app.get('/health', (req: Request, res: Response) => {
 
 app.post('/api/v1/records', (req: Request, res: Response) => {
   console.log('🚀 ~/api/v1/records start');
-  const { index } = req.body;
+  const { index, filter } = req.body;
   console.log(req.body);
   let recordsBatch: Record[] = [];
-  recordsBatch = records.slice(index, index + 20);
-  console.log('🚀 ~ recordsBatch:', recordsBatch);
-  return res.json(recordsBatch);
+  if (filter.length === 0) {
+    recordsBatch = records.slice(index, index + 20);
+    console.log('🚀 ~ recordsBatch:', recordsBatch);
+    return res.json(recordsBatch);
+  } else {
+    recordsBatch = records
+      .filter((record) => filter.includes(record.id))
+      .slice(index, index + 20);
+    console.log('🚀 ~ recordsBatch:', recordsBatch);
+    return res.json(recordsBatch);
+  }
 });
 app.post('/api/v1/selected-records', (req: Request, res: Response) => {
   console.log('🚀 ~/api/v1/selected-records start');
