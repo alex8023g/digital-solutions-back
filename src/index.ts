@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { createRecords } from './createRecords';
+import { nanoid } from 'nanoid';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -102,6 +103,17 @@ app.post('/api/v1/save-selected-order', (req: Request, res: Response) => {
     console.log('🚀 ~ selectedRecordsClone:', selectedRecordsClone);
     return res.json({ status: 'ok' });
   }
+});
+
+app.post('/api/v1/add-new-record', (req: Request, res: Response) => {
+  const { id } = req.body;
+  const record = records.find((record) => record.id === id);
+  if (record) {
+    return res.json({ status: 'error', message: 'Record already exists' });
+  }
+  const newRecord = { id, name: nanoid() };
+  records.push(newRecord);
+  return res.json({ status: 'success', record: newRecord });
 });
 
 app.listen(PORT, () => {
