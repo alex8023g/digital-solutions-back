@@ -43,7 +43,9 @@ app.post('/api/v1/records', (req: Request, res: Response) => {
     return res.json(recordsBatch);
   } else {
     recordsBatch = records
-      .filter((record) => filter.includes(record.id))
+      .filter((record) =>
+        filter.some((fItem: number) => String(record.id).includes(String(fItem)))
+      )
       .slice(index, index + 20);
     console.log('🚀 ~ recordsBatch:', recordsBatch);
     return res.json(recordsBatch);
@@ -52,12 +54,12 @@ app.post('/api/v1/records', (req: Request, res: Response) => {
 
 app.post('/api/v1/selected-records', (req: Request, res: Response) => {
   console.log('🚀 ~/api/v1/selected-records start');
-  const { index, filter } = req.body;
+  const { index, filter }: { index: number; filter: number[] } = req.body;
   if (filter.length === 0) {
     return res.json(selectedRecords.slice(index, index + 20));
   } else {
     filteredSelectedRecords = selectedRecords.filter((record) =>
-      filter.includes(record.id)
+      filter.some((fItem) => String(record.id).includes(String(fItem)))
     );
     return res.json(filteredSelectedRecords.slice(index, index + 20));
   }
